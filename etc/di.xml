@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!-- @see https://github.com/magento/magento2/issues/8508#issuecomment-279720961 -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Translation\Model\Json\PreProcessor"
+                type="SemExpert\TranslationsFix\Model\Json\PreProcessor" />
+</config>
