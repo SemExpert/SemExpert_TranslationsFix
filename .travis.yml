@@ -1,0 +1,66 @@
+language: php
+php:
+  - 7.1
+sudo: required
+dist: trusty
+env:
+  global:
+  - COMPOSER_BIN_DIR=~/bin
+  - INTEGRATION_SETS=3
+  - NODE_JS_VERSION=6
+  - MAGENTO_HOST_NAME="magento2.travis"
+  - TEST_MODULE=semexpert/module-translations-fix
+  matrix:
+  - MAGENTO_VERSION=2.2.6 TEST_SUITE=unit
+  - MAGENTO_VERSION=2.2.6 TEST_SUITE=static
+  - MAGENTO_VERSION=2.2.6 TEST_SUITE=js GRUNT_COMMAND=spec
+  - MAGENTO_VERSION=2.2.6 TEST_SUITE=js GRUNT_COMMAND=static
+  - MAGENTO_VERSION=2.2.6 TEST_SUITE=integration INTEGRATION_INDEX=1
+  - MAGENTO_VERSION=2.2.6 TEST_SUITE=integration INTEGRATION_INDEX=2
+  - MAGENTO_VERSION=2.2.6 TEST_SUITE=integration INTEGRATION_INDEX=3
+  #- MAGENTO_VERSION=2.2.6 TEST_SUITE=functional
+matrix:
+  exclude:
+  # No specific tests to run
+  - php: 7.1
+    env: MAGENTO_VERSION=2.2.6 TEST_SUITE=js GRUNT_COMMAND=static
+  - php: 7.1
+    env: MAGENTO_VERSION=2.2.6 TEST_SUITE=js GRUNT_COMMAND=spec
+
+  # Give up trying to make these work
+  - php: 7.1
+    env: MAGENTO_VERSION=2.2.6 TEST_SUITE=functional
+cache:
+  apt: true
+  directories:
+  - "$HOME/.composer/cache"
+  - "$HOME/.nvm"
+addons:
+  apt:
+    packages:
+    - mysql-server-5.6
+    - mysql-client-core-5.6
+    - mysql-client-5.6
+    - postfix
+  firefox: '46.0'
+  hosts:
+    - magento2.travis
+before_install:
+- git clone https://github.com/magento/magento2 --branch $MAGENTO_VERSION
+- cd magento2
+- bash ./dev/travis/before_install.sh
+install:
+- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+- composer install --no-interaction --prefer-dist
+- composer config repositories.test_target git https://github.com/${TRAVIS_REPO_SLUG}.git
+- composer require $TEST_MODULE dev-$BRANCH
+before_script:
+- cp -f ${TRAVIS_BUILD_DIR}/dev/tests/unit/phpunit.xml dev/tests/unit/
+- cp ${TRAVIS_BUILD_DIR}/dev/tests/static/phpunit.xml.dist dev/tests/static/phpunit.xml
+- cp -f ${TRAVIS_BUILD_DIR}/dev/tests/static/php/whitelist/common.txt dev/tests/static/testsuite/Magento/Test/Php/_files/whitelist/common.txt
+- bash ./dev/travis/before_script.sh
+script:
+- test $TEST_SUITE = "functional" && TEST_FILTER='dev/tests/functional/testsuites/Magento/Mtf/TestSuite/InjectableTests.php' || true
+- if [ $TEST_SUITE == "functional" ]; then dev/tests/functional/vendor/phpunit/phpunit/phpunit -c dev/tests/$TEST_SUITE $TEST_FILTER; fi
+- if [ $TEST_SUITE != "functional" ] && [ $TEST_SUITE != "js" ]; then phpunit -c dev/tests/$TEST_SUITE $TEST_FILTER; fi
+- if [ $TEST_SUITE == "js" ]; then grunt $GRUNT_COMMAND; fi
