@@ -10,8 +10,8 @@ use Magento\Framework\View\Asset\File\FallbackContext;
 use Magento\Framework\View\Asset\PreProcessor\Chain;
 use Magento\Translation\Model\Js\Config;
 use Magento\Translation\Model\Js\DataProvider;
+use PHPUnit\Framework\TestCase;
 use SemExpert\TranslationsFix\Model\Json\PreProcessor;
-
 
 /**
  * Created by PhpStorm.
@@ -21,7 +21,7 @@ use SemExpert\TranslationsFix\Model\Json\PreProcessor;
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class PreProcessorTest extends \PHPUnit_Framework_TestCase
+class PreProcessorTest extends TestCase
 {
     /**
      * @var TranslateInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -50,9 +50,9 @@ class PreProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->configMock = $this->getMock(Config::class, [], [], '', false);
-        $this->areaListMock = $this->getMock(AreaList::class, [], [], '', false);
-        $this->dataProviderMock = $this->getMock(DataProvider::class, [], [], '', false);
+        $this->configMock = $this->getMockBuilder(Config::class)->disableOriginalConstructor()->getMock();
+        $this->areaListMock = $this->getMockbuilder(AreaList::class)->disableOriginalconstructor()->getMock();
+        $this->dataProviderMock = $this->getMockBuilder(DataProvider::class)->disableOriginalConstructor()->getMock();
         $this->translateMock = $this->getMockForAbstractClass(TranslateInterface::class);
 
         $this->model = new PreProcessor(
@@ -65,10 +65,11 @@ class PreProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function testGetData()
     {
-        $chain = $this->getMock(Chain::class, [], [], '', false);
-        $asset = $this->getMock(File::class, [], [], '', false);
-        $context = $this->getMock(FallbackContext::class, [], [], '', false);
-        $area = $this->getMock(Area::class, [], [], '', false);
+        $chain = $this->getMockBuilder(Chain::class)->disableOriginalConstructor()->getMock();
+        $asset = $this->getMockBuilder(File::class)->disableOriginalConstructor()->getMock();
+        $context = $this->getMockBuilder(FallbackContext::class)->disableOriginalConstructor()->getMock();
+        $area = $this->getMockBuilder(Area::class)->disableOriginalConstructor()->getMock();
+
         $fileName = 'js-translation.json';
         $targetPath = 'path/js-translation.json';
         $themePath = '*/*';
@@ -117,7 +118,11 @@ class PreProcessorTest extends \PHPUnit_Framework_TestCase
                 [Area::PART_TRANSLATE]
             );
 
-        /** @var $chain Chain */
-        $this->model->process($chain);
+        try {
+            /** @var $chain Chain */
+            $this->model->process($chain);
+        } catch (\Exception $exception) {
+            $this->fail("Unhandled exception caught.");
+        }
     }
 }

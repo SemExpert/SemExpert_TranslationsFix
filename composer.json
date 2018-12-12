@@ -15,7 +15,9 @@
   "version": "1.0.0",
   "require": {
     "php": ">=5.6.19",
-    "magento/framework": "100.1.*"
+    "magento/framework": "100.1.*",
+    "magento/module-translation": "100.1.*",
+    "ext-json": "*"
   },
   "autoload": {
     "files": [

@@ -24,6 +24,7 @@ class PreProcessor extends BasePreProcessor
      *
      * @see https://github.com/magento/magento2/issues/8508#issuecomment-279332346
      * @param Chain $chain
+     * @throws \Exception
      * @return void
      */
     public function process(Chain $chain)
