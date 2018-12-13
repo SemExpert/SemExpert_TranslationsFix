@@ -1,0 +1,1 @@
+vendor/semexpert/module-translations-fix
