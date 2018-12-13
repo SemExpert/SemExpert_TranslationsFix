@@ -56,7 +56,7 @@ install:
 - composer require $TEST_MODULE dev-$BRANCH
 before_script:
 - cp -f ${TRAVIS_BUILD_DIR}/dev/tests/unit/phpunit.xml dev/tests/unit/
-- cp ${TRAVIS_BUILD_DIR}/dev/tests/static/phpunit.xml.dist dev/tests/static/phpunit.xml
+- cp ${TRAVIS_BUILD_DIR}/dev/tests/static/phpunit.xml.dist dev/tests/static/phpunit.xml.dist
 - cp -f ${TRAVIS_BUILD_DIR}/dev/tests/static/php/whitelist/common.txt dev/tests/static/testsuite/Magento/Test/Php/_files/whitelist/common.txt
 - bash ./dev/travis/before_script.sh
 script:
